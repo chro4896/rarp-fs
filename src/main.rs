@@ -1,3 +1,12 @@
+#[link(name = "fuse3")]
+extern {
+	fn fuse_main_real(argc: core::ffi::c_int, argv: **mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
+}
+
+#[repr(C)]
+struct fuse_operations {
+}
+
 fn main() {
     println!("Hello, world!");
 }
