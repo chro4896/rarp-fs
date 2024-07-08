@@ -13,7 +13,7 @@ pub extern "C" fn read_test_fuse(_path: *const core::ffi::c_char, buf: *mut core
         0
 	} else {
 		unsafe {
-			buf.offset(0) = 10;
+			*buf = 10;
 		}
 		1
 	}
