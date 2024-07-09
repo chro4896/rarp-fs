@@ -8,7 +8,10 @@ struct fuse_operations {
 }
 
 fn main() {
-    println!("Hello, world!");
+	let args: Vec<String> = env::args().collect();
+	let args: Vec<*mut core::ffi::c_char> = unsafe { args.iter().map(|s| std::ffi::CString::new(s).unwrap().as_mut_ptr()).collect() };
+	let fuse_op = fuse_operations {};
+	unsafe { fuse_main_real(args.len(), args.as_mut_ptr(), &fuse_op, std::mem::sizeof::<fuse_operations>(), std::ptr::null()) };
 }
 
 pub extern "C" fn open_test_fuse(_path: *const core::ffi::c_char, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
