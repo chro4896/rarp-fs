@@ -13,11 +13,11 @@ fn main() {
 		let v = s.into_bytes().to_vec();
 		let mut v: Vec<u8> = v.iter().map(|c| *c).collect();
 		v.push(b'\0');
-		v.iter().map(|c| *c as core::ffi::c_char).collect();
+		v.iter().map(|c| *c as core::ffi::c_char).collect()
 	}).collect();
 	let args: Vec<*mut core::ffi::c_char> = unsafe { args.iter().map(|s| s.as_mut_ptr()).collect() };
 	let fuse_op = fuse_operations {};
-	unsafe { fuse_main_real(args.len(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
+	unsafe { fuse_main_real(args.len().try_into().unwrap(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
 }
 
 pub extern "C" fn open_test_fuse(_path: *const core::ffi::c_char, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
