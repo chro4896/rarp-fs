@@ -9,7 +9,11 @@ struct fuse_operations {
 
 fn main() {
 	let args: Vec<String> = std::env::args().collect();
-	let args: Vec<core::ffi::CStr> = args.iter().map(|s| core::ffi::CStr::from_bytes_with_nul(s.into_bytes().to_vec().push(b'\0')).unwrap()).collect();
+	let args: Vec<Box<core::ffi::CStr>> = args.iter().map(|s| {
+		let mut v = s.into_bytes().to_vec();
+		v.push(b'\0');
+		Box::new(core::ffi::CStr::from_bytes_with_nul(v).unwrap())
+	}).collect();
 	let args: Vec<*mut core::ffi::c_char> = unsafe { args.iter().map(|s| s.as_ptr()).collect() };
 	let fuse_op = fuse_operations {};
 	unsafe { fuse_main_real(args.len(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
