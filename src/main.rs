@@ -5,8 +5,8 @@ extern {
 
 #[repr(C)]
 struct fuse_operations {
-	open: fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
-	read: fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
+	open: extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
+	read: extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
 }
 
 fn main() {
