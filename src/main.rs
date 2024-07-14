@@ -5,8 +5,8 @@ extern {
 
 #[repr(C)]
 struct fuse_operations {
-	open: extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
-	read: extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
+	open: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	read: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int>,
 }
 
 fn main() {
@@ -18,8 +18,8 @@ fn main() {
 	}).collect();
 	let mut args: Vec<*mut core::ffi::c_char> = args.iter_mut().map(|v| v.as_mut_ptr()).collect();
 	let fuse_op = fuse_operations {
-		open: open_test_fuse,
-		read: read_test_fuse,
+		open: Some(open_test_fuse),
+		read: Some(read_test_fuse),
 	};
 	unsafe { fuse_main_real(args.len().try_into().unwrap(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
 }
