@@ -5,6 +5,18 @@ extern {
 
 #[repr(C)]
 struct fuse_operations {
+	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	readlink: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize) -> core::ffi::c_int>,
+	mknod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, libc::dev_t) -> core::ffi::c_int>,
+	mkdir: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t) -> core::ffi::c_int>,
+	unlink: Option<extern "C" fn(*const core::ffi::c_char) -> core::ffi::c_int>,
+	rmdir: Option<extern "C" fn(*const core::ffi::c_char) -> core::ffi::c_int>,
+	symlink: Option<extern "C" fn(*const core::ffi::c_char, *const core::ffi::c_char) -> core::ffi::c_int>,
+	rename: Option<extern "C" fn(*const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_uint) -> core::ffi::c_int>,
+	link: Option<extern "C" fn(*const core::ffi::c_char, *const core::ffi::c_char) -> core::ffi::c_int>,
+	chmod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, *const core::ffi::c_void) -> core::ffi::c_int>,
+	chown: Option<extern "C" fn(*const core::ffi::c_char, libc::uid_t, libc::gid_t, *const core::ffi::c_void) -> core::ffi::c_int>,
+	truncate: Option<extern "C" fn(*const core::ffi::c_char, libc::off_t, *const core::ffi::c_void) -> core::ffi::c_int>,
 	open: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	read: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int>,
 }
@@ -18,6 +30,17 @@ fn main() {
 	}).collect();
 	let mut args: Vec<*mut core::ffi::c_char> = args.iter_mut().map(|v| v.as_mut_ptr()).collect();
 	let fuse_op = fuse_operations {
+		getattr: None,
+		readlink: None,
+		mknod: None,
+		unlink: None,
+		rmdir: None,
+		symlink: None,
+		rename: None,
+		link: None,
+		chmod: None,
+		chown: None,
+		truncate: None,
 		open: Some(open_test_fuse),
 		read: Some(read_test_fuse),
 	};
