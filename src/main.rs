@@ -33,6 +33,7 @@ fn main() {
 		getattr: None,
 		readlink: None,
 		mknod: None,
+		mkdir: None,
 		unlink: None,
 		rmdir: None,
 		symlink: None,
