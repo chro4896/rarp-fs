@@ -33,6 +33,7 @@ fn main() {
 	let fuse_op = fuse_operations {
 		getattr: None,
 		readlink: None,
+		getdir: None,
 		mknod: None,
 		mkdir: None,
 		unlink: None,
