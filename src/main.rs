@@ -9,6 +9,32 @@ struct fuse_operations {
 	read: extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
 }
 
+trait FuseOperations {
+	type OPEN_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int;
+	type READ_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int;
+	fn get_open_fn (&self) -> Option<OPEN_FN>;
+	fn get_read_fn (&self) -> Option<READ_FN>;
+}
+
+struct fuse_operations_rust<OPEN_FN=fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int, READ_FN=fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int> {
+	open: Option<OPEN_FN>,
+	read: Option<READ_FN>, 
+}
+
+impl<OPEN_FN, READ_FN> FuseOperations for fuse_operations_rust<OPEN_FN, READ_FN> where
+    OPEN_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
+    READ_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
+{
+	type OPEN_FN = OPEN_FN;
+	type READ_FN = READ_FN;
+	fn get_open_fn (&self) -> Option<OPEN_FN> {
+		self.open
+	}
+	fn get_read_fn (&self) -> Option<READ_FN> {
+		self.read
+	}
+}
+
 fn main() {
 	let args: Vec<String> = std::env::args().collect();
 	let mut args: Vec<Vec<core::ffi::c_char>> = args.into_iter().map(|s| {
