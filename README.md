@@ -5,3 +5,5 @@ rust とlibfuse を使う練習として、RARP を使ってファイル共有�
 
 このプログラムはlibfuse3 とリンクして動作します。
 libfuse3 や、rust で使用するcrate のライセンスは[third-party-license.html](./third-party-license.html)に記載しています。
+
+また、rarp-fs のライセンスは[LICENSE](./LICENSE) に記載しています。
