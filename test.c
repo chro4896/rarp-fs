@@ -28,9 +28,9 @@ int getattr_test_fuse (const char *path, struct stat *stbuf, struct fuse_file_in
 
 int readdir_test_fuse (const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi, enum fuse_readdir_flags flg) {
 
-  filler(buf, ".", NULL, 0);
-  filler(buf, "..", NULL, 0);
-  filler(buf, "test", NULL, 0);
+  filler(buf, ".", NULL, 0, flg);
+  filler(buf, "..", NULL, 0, flg);
+  filler(buf, "test", NULL, 0, flg);
 
   return 0;
 }
