@@ -1,5 +1,7 @@
 #include <fuse3/fuse.h>
 
+#define FUSE_USE_VERSION 32
+
 static int open_test_fuse (const char *path, struct fuse_file_info *fi) {
   return 0;
 }
