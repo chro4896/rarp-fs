@@ -76,15 +76,15 @@ pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut c
 }
 
 pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
-	libc::memset(stbuf as *mut libc::c_void, 0, std::mem::sizeof::<libc::stat>());
+	libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>());
 	let stbuf = &*stbuf;
 	stbuf.st_uid = libc::getuid();
 	stbuf.st_gid = libc::getgid();
 	if *(path.offset(1)) == b'\0' as core::ffi::c_char {
-		stbuf.st_mode = libc::IFDIR | 0o775;
+		stbuf.st_mode = libc::S_IFDIR | 0o775;
 		stbuf.st_nlink = 2;
 	} else {
-		stbuf.st_mode = libc::IFREG | 0o664;
+		stbuf.st_mode = libc::S_IFREG | 0o664;
 		stbuf.st_nlink = 1;
 		stbuf.st_size = 1;
 	}
