@@ -20,7 +20,7 @@ extern {
 	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
 }
 
-type fuse_fill_dir_t = fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
+type fuse_fill_dir_t = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
 
 #[repr(C)]
 struct fuse_operations {
@@ -68,10 +68,13 @@ pub extern "C" fn read_test_fuse(_path: *const core::ffi::c_char, buf: *mut core
 	}
 }
 
-pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut core::ffi::c_void, filler: fuse_fill_dir_t, offset: libc::off_t, _fi: *mut core::ffi::c_void, flg: i32) -> core::ffi::c_int {
+pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut core::ffi::c_void, filler: fuse_fill_dir_t, _offset: libc::off_t, _fi: *mut core::ffi::c_void, flg: i32) -> core::ffi::c_int {
+	filler(buf, [b'.' as core::ffi::c_char,b'\0' as core::ffi::c_char].as_ptr(), std::ptr::null(), 0, flg);
+	filler(buf, [b'.' as core::ffi::c_char,b'.' as core::ffi::c_char,b'\0' as core::ffi::c_char].as_ptr(), std::ptr::null(), 0, flg);
+	filler(buf, [b't' as core::ffi::c_char,b'e' as core::ffi::c_char,b's' as core::ffi::c_char,b't' as core::ffi::c_char,b'\0' as core::ffi::c_char].as_ptr(), std::ptr::null(), 0, flg);
 	0
 }
 
-pub extern "C" fn getattr_test_fuse(_path: *const core::ffi::c_char, stbuf: *mut core::ffi::c_void, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+pub extern "C" fn getattr_test_fuse(_path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
 	0
 }
