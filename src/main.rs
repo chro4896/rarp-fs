@@ -1,3 +1,21 @@
+static fuse_op: fuse_operations = fuse_operations {
+		getattr: None,
+		readlink: None,
+		getdir: None,
+		mknod: None,
+		mkdir: None,
+		unlink: None,
+		rmdir: None,
+		symlink: None,
+		rename: None,
+		link: None,
+		chmod: None,
+		chown: None,
+		truncate: None,
+		open: Some(open_test_fuse),
+		read: Some(read_test_fuse),
+	};
+
 #[link(name = "fuse3")]
 extern {
 	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
@@ -30,23 +48,6 @@ fn main() {
 		v.iter().map(|c| *c as core::ffi::c_char).collect()
 	}).collect();
 	let mut args: Vec<*mut core::ffi::c_char> = args.iter_mut().map(|v| v.as_mut_ptr()).collect();
-	let fuse_op = fuse_operations {
-		getattr: None,
-		readlink: None,
-		getdir: None,
-		mknod: None,
-		mkdir: None,
-		unlink: None,
-		rmdir: None,
-		symlink: None,
-		rename: None,
-		link: None,
-		chmod: None,
-		chown: None,
-		truncate: None,
-		open: Some(open_test_fuse),
-		read: Some(read_test_fuse),
-	};
 	unsafe { fuse_main_real(args.len().try_into().unwrap(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
 }
 
