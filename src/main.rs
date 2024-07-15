@@ -20,6 +20,8 @@ extern {
 	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
 }
 
+type fuse_fill_dir_t = fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
+
 #[repr(C)]
 struct fuse_operations {
 	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void, *mut core::ffi::c_void) -> core::ffi::c_int>,
@@ -64,4 +66,12 @@ pub extern "C" fn read_test_fuse(_path: *const core::ffi::c_char, buf: *mut core
 		}
 		1
 	}
+}
+
+pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut core::ffi::c_void, filler: fuse_fill_dir_t, offset: libc::off_t, _fi: *mut core::ffi::c_void, flg: i32) -> core::ffi::c_int {
+	0
+}
+
+pub extern "C" fn getattr_test_fuse(_path: *const core::ffi::c_char, stbuf: *mut core::ffi::c_void, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+	0
 }
