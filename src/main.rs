@@ -24,7 +24,7 @@ type fuse_fill_dir_t = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c
 
 #[repr(C)]
 struct fuse_operations {
-	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut libc::stat, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	readlink: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize) -> core::ffi::c_int>,
 	mknod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, libc::dev_t) -> core::ffi::c_int>,
 	mkdir: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t) -> core::ffi::c_int>,
