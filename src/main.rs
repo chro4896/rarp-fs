@@ -1,5 +1,5 @@
 static fuse_op: fuse_operations = fuse_operations {
-		getattr: None,
+		getattr: Some(getattr_test_fuse),
 		readlink: None,
 		mknod: None,
 		mkdir: None,
