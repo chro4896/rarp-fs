@@ -1,5 +1,5 @@
 static fuse_op: fuse_operations = fuse_operations {
-		getattr: None,
+		getattr: Some(getattr_test_fuse),
 		readlink: None,
 		mknod: None,
 		mkdir: None,
@@ -24,7 +24,7 @@ type fuse_fill_dir_t = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c
 
 #[repr(C)]
 struct fuse_operations {
-	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut libc::stat, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	readlink: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize) -> core::ffi::c_int>,
 	mknod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, libc::dev_t) -> core::ffi::c_int>,
 	mkdir: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t) -> core::ffi::c_int>,
@@ -102,6 +102,7 @@ pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut c
 }
 
 pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+	println!("getattr");
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	let stbuf = &mut unsafe { *stbuf };
 	stbuf.st_uid = unsafe { libc::getuid() };
@@ -109,10 +110,13 @@ pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut 
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
 		stbuf.st_mode = libc::S_IFDIR | 0o775;
 		stbuf.st_nlink = 2;
-	} else {
+		0
+	} else if unsafe { *(path.offset(1)) as u8 } == b't' && unsafe { *(path.offset(2)) as u8 } == b'e' && unsafe { *(path.offset(3)) as u8 } == b's' && unsafe { *(path.offset(4)) as u8 } == b't' {
 		stbuf.st_mode = libc::S_IFREG | 0o664;
 		stbuf.st_nlink = 1;
 		stbuf.st_size = 1;
+		0
+	} else {
+		(-1)*libc::ENOENT
 	}
-	0
 }
