@@ -76,6 +76,7 @@ pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut c
 }
 
 pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+	println!("getattr");
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	let stbuf = &mut unsafe { *stbuf };
 	stbuf.st_uid = unsafe { libc::getuid() };
