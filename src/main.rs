@@ -3,8 +3,6 @@ extern {
 	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
 }
 
-type fuse_fill_dir_t = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
-
 #[repr(C)]
 struct fuse_operations {
 	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut libc::stat, *mut core::ffi::c_void) -> core::ffi::c_int>,
@@ -22,6 +20,33 @@ struct fuse_operations {
 	open: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	read: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	write: *const core::ffi::c_void,
+	statfs: *const core::ffi::c_void,
+	flush: *const core::ffi::c_void,
+	release: *const core::ffi::c_void,
+	fsync: *const core::ffi::c_void,
+	setxattr: *const core::ffi::c_void,
+	getxattr: *const core::ffi::c_void,
+	listxattr: *const core::ffi::c_void,
+	removexattr: *const core::ffi::c_void,
+	opendir: *const core::ffi::c_void,
+	readdir: *const core::ffi::c_void,
+	releasedir: *const core::ffi::c_void,
+	fsyncdir: *const core::ffi::c_void,
+	init: *const core::ffi::c_void,
+	destroy: *const core::ffi::c_void,
+	access: *const core::ffi::c_void,
+	create: *const core::ffi::c_void,
+	lock: *const core::ffi::c_void,
+	utimens: *const core::ffi::c_void,
+	bmap: *const core::ffi::c_void,
+	ioctl: *const core::ffi::c_void,
+	poll: *const core::ffi::c_void,
+	write_buf: *const core::ffi::c_void,
+	read_buf: *const core::ffi::c_void,
+	flock: *const core::ffi::c_void,
+	fallocate: *const core::ffi::c_void,
+	copy_file_range: *const core::ffi::c_void,
+	lseek: *const core::ffi::c_void,
 }
 
 fn main() {
@@ -48,6 +73,33 @@ fn main() {
 		open: Some(open_test_fuse),
 		read: Some(read_test_fuse),
 		write: std::ptr::null(),
+		statfs: std::ptr::null(),
+		flush: std::ptr::null(),
+		release: std::ptr::null(),
+		fsync: std::ptr::null(),
+		setxattr: std::ptr::null(),
+		getxattr: std::ptr::null(),
+		listxattr: std::ptr::null(),
+		removexattr: std::ptr::null(),
+		opendir: std::ptr::null(),
+		readdir: std::ptr::null(),
+		releasedir: std::ptr::null(),
+		fsyncdir: std::ptr::null(),
+		init: std::ptr::null(),
+		destroy: std::ptr::null(),
+		access: std::ptr::null(),
+		create: std::ptr::null(),
+		lock: std::ptr::null(),
+		utimens: std::ptr::null(),
+		bmap: std::ptr::null(),
+		ioctl: std::ptr::null(),
+		poll: std::ptr::null(),
+		write_buf: std::ptr::null(),
+		read_buf: std::ptr::null(),
+		flock: std::ptr::null(),
+		fallocate: std::ptr::null(),
+		copy_file_range: std::ptr::null(),
+		lseek: std::ptr::null(),
 	};
 	unsafe { fuse_main_real(args.len().try_into().unwrap(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
 }
