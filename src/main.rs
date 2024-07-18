@@ -1,20 +1,4 @@
-static fuse_op: fuse_operations = fuse_operations {
-		getattr: Some(getattr_test_fuse),
-		readlink: None,
-		mknod: None,
-		mkdir: None,
-		unlink: None,
-		rmdir: None,
-		symlink: None,
-		rename: None,
-		link: None,
-		chmod: None,
-		chown: None,
-		truncate: None,
-		open: Some(open_test_fuse),
-		read: Some(read_test_fuse),
-		write: std::ptr::null(),
-	};
+static fuse_op: std::cell::OnceCell<fuse_operations> = OnceCell::new();
 
 #[link(name = "fuse3")]
 extern {
@@ -50,7 +34,24 @@ fn main() {
 		v.iter().map(|c| *c as core::ffi::c_char).collect()
 	}).collect();
 	let mut args: Vec<*mut core::ffi::c_char> = args.iter_mut().map(|v| v.as_mut_ptr()).collect();
-	unsafe { fuse_main_real(args.len().try_into().unwrap(), args.as_mut_ptr(), &fuse_op, std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
+	fuse_op.set(fuse_operations {
+		getattr: Some(getattr_test_fuse),
+		readlink: None,
+		mknod: None,
+		mkdir: None,
+		unlink: None,
+		rmdir: None,
+		symlink: None,
+		rename: None,
+		link: None,
+		chmod: None,
+		chown: None,
+		truncate: None,
+		open: Some(open_test_fuse),
+		read: Some(read_test_fuse),
+		write: std::ptr::null(),
+	});
+	unsafe { fuse_main_real(args.len().try_into().unwrap(), args.as_mut_ptr(), fuse_op.get(), std::mem::size_of::<fuse_operations>(), std::ptr::null_mut()) };
 }
 
 pub extern "C" fn open_test_fuse(_path: *const core::ffi::c_char, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
