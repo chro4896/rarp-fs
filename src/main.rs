@@ -85,7 +85,7 @@ pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut 
 		stbuf.st_mode = libc::S_IFDIR | 0o775;
 		stbuf.st_nlink = 2;
 		0
-	} else if unsafe { *(path.offset(1)) } == b't' && unsafe { *(path.offset(2)) } == b'e' && unsafe { *(path.offset(3)) } == b's' && unsafe { *(path.offset(4)) } == b't' {
+	} else if unsafe { *(path.offset(1)) as u8 } == b't' && unsafe { *(path.offset(2)) as u8 } == b'e' && unsafe { *(path.offset(3)) as u8 } == b's' && unsafe { *(path.offset(4)) as u8 } == b't' {
 		stbuf.st_mode = libc::S_IFREG | 0o664;
 		stbuf.st_nlink = 1;
 		stbuf.st_size = 1;
