@@ -58,7 +58,7 @@ fn main() {
 	}).collect();
 	let mut args: Vec<*mut core::ffi::c_char> = args.iter_mut().map(|v| v.as_mut_ptr()).collect();
 	let fuse_op = fuse_operations {
-		getattr: None,
+		getattr: Some(getattr_test_fuse),
 		readlink: None,
 		mknod: None,
 		mkdir: None,
@@ -122,6 +122,10 @@ pub extern "C" fn read_test_fuse(_path: *const core::ffi::c_char, buf: *mut core
 }
 
 pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+		(-1)*libc::ENOENT
+}
+
+pub extern "C" fn getattr_test_fuse_(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
 	println!("getattr");
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	let stbuf = &mut unsafe { *stbuf };
