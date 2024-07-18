@@ -58,7 +58,7 @@ fn main() {
 	}).collect();
 	let mut args: Vec<*mut core::ffi::c_char> = args.iter_mut().map(|v| v.as_mut_ptr()).collect();
 	let fuse_op = fuse_operations {
-		getattr: Some(getattr_test_fuse),
+		getattr: None,
 		readlink: None,
 		mknod: None,
 		mkdir: None,
