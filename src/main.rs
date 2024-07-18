@@ -13,6 +13,7 @@ static fuse_op: fuse_operations = fuse_operations {
 		truncate: None,
 		open: Some(open_test_fuse),
 		read: Some(read_test_fuse),
+		write: None,
 	};
 
 #[link(name = "fuse3")]
@@ -38,6 +39,7 @@ struct fuse_operations {
 	truncate: Option<extern "C" fn(*const core::ffi::c_char, libc::off_t, *const core::ffi::c_void) -> core::ffi::c_int>,
 	open: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	read: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	write: Option<()>,
 }
 
 fn main() {
