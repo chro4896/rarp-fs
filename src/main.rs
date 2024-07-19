@@ -41,10 +41,8 @@ struct fuse_operations {
 }
 
 trait FuseOperations {
-	type OPEN_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int;
-	type READ_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int;
-	fn get_open_fn (&self) -> Option<OPEN_FN>;
-	fn get_read_fn (&self) -> Option<READ_FN>;
+	fn get_open_fn (&self, *const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int;
+	fn get_read_fn (&self, *const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int;
 }
 
 struct fuse_operations_rust<OPEN_FN=fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int, READ_FN=fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int> {
@@ -53,16 +51,14 @@ struct fuse_operations_rust<OPEN_FN=fn(*const core::ffi::c_char, *mut core::ffi:
 }
 
 impl<OPEN_FN, READ_FN> FuseOperations for fuse_operations_rust<OPEN_FN, READ_FN> where
-    OPEN_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
-    READ_FN: Fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
+    OPEN_FN: FnMut(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
+    READ_FN: FnMut(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
 {
-	type OPEN_FN = OPEN_FN;
-	type READ_FN = READ_FN;
-	fn get_open_fn (&self) -> Option<OPEN_FN> {
-		self.open
+	fn get_open_fn (&self, path: *const core::ffi::c_char, fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+		(self.open.as_ref().unwrap())(path, fi)
 	}
-	fn get_read_fn (&self) -> Option<READ_FN> {
-		self.read
+	fn get_read_fn (&self, path: *const core::ffi::c_char, buf: *mut core::ffi::c_char, size: usize, offset: libc::off_t, fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+		(self.read.as_ref().unwrap())(path, buf, size, offset, fi)
 	}
 }
 
