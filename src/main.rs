@@ -134,7 +134,7 @@ pub extern "C" fn getattr_test_fuse_(path: *const core::ffi::c_char, stbuf: *mut
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
 		stbuf.st_mode = libc::S_IFDIR | 0o775;
 		stbuf.st_nlink = 2;
-		println!("{:?}", *stbuf);
+		println!("{:?}", stbuf);
 		0
 	} else if unsafe { *(path.offset(1)) as u8 } == b't' && unsafe { *(path.offset(2)) as u8 } == b'e' && unsafe { *(path.offset(3)) as u8 } == b's' && unsafe { *(path.offset(4)) as u8 } == b't' {
 		stbuf.st_mode = libc::S_IFREG | 0o664;
