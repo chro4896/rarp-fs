@@ -41,8 +41,8 @@ struct fuse_operations {
 }
 
 trait FuseOperations {
-	fn get_open_fn (&self, *const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int;
-	fn get_read_fn (&self, *const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int;
+	fn get_open_fn (&self, path: *const core::ffi::c_char, fi: *mut core::ffi::c_void) -> core::ffi::c_int;
+	fn get_read_fn (&self, path: *const core::ffi::c_char, buf: *mut core::ffi::c_char, size: usize, offset: libc::off_t, fi: *mut core::ffi::c_void) -> core::ffi::c_int;
 }
 
 struct fuse_operations_rust<OPEN_FN=fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int, READ_FN=fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int> {
@@ -54,11 +54,11 @@ impl<OPEN_FN, READ_FN> FuseOperations for fuse_operations_rust<OPEN_FN, READ_FN>
     OPEN_FN: FnMut(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int,
     READ_FN: FnMut(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int,
 {
-	fn get_open_fn (&self, path: *const core::ffi::c_char, fi: *mut core::ffi::c_void) -> core::ffi::c_int {
-		(self.open.as_ref().unwrap())(path, fi)
+	fn get_open_fn (&mut self, path: *const core::ffi::c_char, fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+		(self.open.as_mut().unwrap())(path, fi)
 	}
-	fn get_read_fn (&self, path: *const core::ffi::c_char, buf: *mut core::ffi::c_char, size: usize, offset: libc::off_t, fi: *mut core::ffi::c_void) -> core::ffi::c_int {
-		(self.read.as_ref().unwrap())(path, buf, size, offset, fi)
+	fn get_read_fn (&mut self, path: *const core::ffi::c_char, buf: *mut core::ffi::c_char, size: usize, offset: libc::off_t, fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+		(self.read.as_mut().unwrap())(path, buf, size, offset, fi)
 	}
 }
 
