@@ -122,10 +122,6 @@ pub extern "C" fn read_test_fuse(_path: *const core::ffi::c_char, buf: *mut core
 }
 
 pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
-		(-1)*libc::ENOENT
-}
-
-pub extern "C" fn getattr_test_fuse_(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
 	println!("getattr");
 	println!("{}", std::mem::size_of::<libc::stat>());
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
