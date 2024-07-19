@@ -127,6 +127,7 @@ pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut 
 
 pub extern "C" fn getattr_test_fuse_(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
 	println!("getattr");
+	println!("{}", std::mem::size_of::<libc::stat>());
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	let stbuf = &mut unsafe { *stbuf };
 	stbuf.st_uid = unsafe { libc::getuid() };
@@ -134,7 +135,7 @@ pub extern "C" fn getattr_test_fuse_(path: *const core::ffi::c_char, stbuf: *mut
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
 		stbuf.st_mode = libc::S_IFDIR | 0o775;
 		stbuf.st_nlink = 2;
-		println!("{:?}", stbuf);
+		println!("{:b}", stbuf.st_mode);
 		0
 	} else if unsafe { *(path.offset(1)) as u8 } == b't' && unsafe { *(path.offset(2)) as u8 } == b'e' && unsafe { *(path.offset(3)) as u8 } == b's' && unsafe { *(path.offset(4)) as u8 } == b't' {
 		stbuf.st_mode = libc::S_IFREG | 0o664;
