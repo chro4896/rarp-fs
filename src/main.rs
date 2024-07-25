@@ -5,7 +5,7 @@ extern {
 
 #[repr(C)]
 struct fuse_operations {
-	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut libc::stat, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	getattr: Option<extern "C" fn(*const core::ffi::c_char, Option<&mut libc::stat>, *mut core::ffi::c_void) -> core::ffi::c_int>,
 	readlink: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize) -> core::ffi::c_int>,
 	mknod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, libc::dev_t) -> core::ffi::c_int>,
 	mkdir: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t) -> core::ffi::c_int>,
@@ -125,7 +125,7 @@ pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: Optio
 	let stbuf = stbuf.unwrap();
 	println!("getattr");
 	println!("{}", std::mem::size_of::<libc::stat>());
-	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
+	unsafe { libc::memset(stbuf as *mut libc::stat as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	unsafe { (*stbuf).st_uid = libc::getuid() };
 	unsafe { (*stbuf).st_gid = libc::getgid() };
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
