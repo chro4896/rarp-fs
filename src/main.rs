@@ -126,7 +126,7 @@ pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut 
 	println!("{}", std::mem::size_of::<libc::stat>());
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	unsafe { (*stbuf).st_uid = libc::getuid() };
-	unsafe { stbuf.st_gid = libc::getgid() };
+	unsafe { (*stbuf).st_gid = libc::getgid() };
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
 		unsafe { (*stbuf).st_mode = libc::S_IFDIR | 0o775 };
 		unsafe { (*stbuf).st_nlink = 2 };
