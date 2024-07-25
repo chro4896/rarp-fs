@@ -50,10 +50,10 @@ pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut c
 	0
 }
 
-pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut libc::stat, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: Option<&mut libc::stat>, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
+	let stbuf = stbuf.unwrap();
 	println!("getattr");
-	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
-	let stbuf = &mut unsafe { *stbuf };
+	unsafe { libc::memset(stbuf as *mut libc::stat as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
 	stbuf.st_uid = unsafe { libc::getuid() };
 	stbuf.st_gid = unsafe { libc::getgid() };
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
