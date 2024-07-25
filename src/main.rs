@@ -125,17 +125,16 @@ pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: *mut 
 	println!("getattr");
 	println!("{}", std::mem::size_of::<libc::stat>());
 	unsafe { libc::memset(stbuf as *mut libc::c_void, 0, std::mem::size_of::<libc::stat>()) };
-	stbuf.st_uid = unsafe { libc::getuid() };
-	stbuf.st_gid = unsafe { libc::getgid() };
+	unsafe { (*stbuf).st_uid = libc::getuid() };
+	unsafe { stbuf.st_gid = libc::getgid() };
 	if unsafe { *(path.offset(1)) } == b'\0' as core::ffi::c_char {
-		stbuf.st_mode = libc::S_IFDIR | 0o775;
-		stbuf.st_nlink = 2;
-		println!("{:b}", stbuf.st_mode);
+		unsafe { (*stbuf).st_mode = libc::S_IFDIR | 0o775 };
+		unsafe { (*stbuf).st_nlink = 2 };
 		0
 	} else if unsafe { *(path.offset(1)) as u8 } == b't' && unsafe { *(path.offset(2)) as u8 } == b'e' && unsafe { *(path.offset(3)) as u8 } == b's' && unsafe { *(path.offset(4)) as u8 } == b't' {
-		stbuf.st_mode = libc::S_IFREG | 0o664;
-		stbuf.st_nlink = 1;
-		stbuf.st_size = 1;
+		unsafe { (*stbuf).st_mode = libc::S_IFREG | 0o664 };
+		unsafe { (*stbuf).st_nlink = 1 };
+		unsafe { (*stbuf).st_size = 1 };
 		0
 	} else {
 		(-1)*libc::ENOENT
