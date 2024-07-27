@@ -84,7 +84,7 @@ fn main() {
 		listxattr: std::ptr::null(),
 		removexattr: std::ptr::null(),
 		opendir: std::ptr::null(),
-		readdir: std::ptr::null(),
+		readdir: readdir_test_fuse as *const core::ffi::c_void,
 		releasedir: std::ptr::null(),
 		fsyncdir: std::ptr::null(),
 		init: std::ptr::null(),
