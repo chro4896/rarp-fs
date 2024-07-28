@@ -29,7 +29,7 @@ struct fuse_operations {
 	listxattr: *const core::ffi::c_void,
 	removexattr: *const core::ffi::c_void,
 	opendir: *const core::ffi::c_void,
-	readdir: *const core::ffi::c_void,
+	readdir: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void, FuseFillDir, libc::off_t, *mut core::ffi::c_void, i32) -> core::ffi::c_int>,
 	releasedir: *const core::ffi::c_void,
 	fsyncdir: *const core::ffi::c_void,
 	init: *const core::ffi::c_void,
@@ -54,24 +54,52 @@ extern {
 	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
 }
 
-type fuse_fill_dir_t = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
+type FuseFillDir = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
 
 #[repr(C)]
 struct fuse_operations {
-	getattr: Option<extern "C" fn(*const core::ffi::c_char, *mut libc::stat, *mut core::ffi::c_void) -> core::ffi::c_int>,
-	readlink: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize) -> core::ffi::c_int>,
-	mknod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, libc::dev_t) -> core::ffi::c_int>,
-	mkdir: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t) -> core::ffi::c_int>,
-	unlink: Option<extern "C" fn(*const core::ffi::c_char) -> core::ffi::c_int>,
-	rmdir: Option<extern "C" fn(*const core::ffi::c_char) -> core::ffi::c_int>,
-	symlink: Option<extern "C" fn(*const core::ffi::c_char, *const core::ffi::c_char) -> core::ffi::c_int>,
-	rename: Option<extern "C" fn(*const core::ffi::c_char, *const core::ffi::c_char, *const core::ffi::c_uint) -> core::ffi::c_int>,
-	link: Option<extern "C" fn(*const core::ffi::c_char, *const core::ffi::c_char) -> core::ffi::c_int>,
-	chmod: Option<extern "C" fn(*const core::ffi::c_char, libc::mode_t, *const core::ffi::c_void) -> core::ffi::c_int>,
-	chown: Option<extern "C" fn(*const core::ffi::c_char, libc::uid_t, libc::gid_t, *const core::ffi::c_void) -> core::ffi::c_int>,
-	truncate: Option<extern "C" fn(*const core::ffi::c_char, libc::off_t, *const core::ffi::c_void) -> core::ffi::c_int>,
-	open: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void) -> core::ffi::c_int>,
-	read: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_char, usize, libc::off_t, *mut core::ffi::c_void) -> core::ffi::c_int>,
+	getattr: *const core::ffi::c_void,
+	readlink: *const core::ffi::c_void,
+	mknod: *const core::ffi::c_void,
+	mkdir: *const core::ffi::c_void,
+	unlink: *const core::ffi::c_void,
+	rmdir: *const core::ffi::c_void,
+	symlink: *const core::ffi::c_void,
+	rename: *const core::ffi::c_void,
+	link: *const core::ffi::c_void,
+	chmod: *const core::ffi::c_void,
+	chown: *const core::ffi::c_void,
+	truncate: *const core::ffi::c_void,
+	open: *const core::ffi::c_void,
+	read: *const core::ffi::c_void,
+	write: *const core::ffi::c_void,
+	statfs: *const core::ffi::c_void,
+	flush: *const core::ffi::c_void,
+	release: *const core::ffi::c_void,
+	fsync: *const core::ffi::c_void,
+	setxattr: *const core::ffi::c_void,
+	getxattr: *const core::ffi::c_void,
+	listxattr: *const core::ffi::c_void,
+	removexattr: *const core::ffi::c_void,
+	opendir: *const core::ffi::c_void,
+	readdir: *const core::ffi::c_void,
+	releasedir: *const core::ffi::c_void,
+	fsyncdir: *const core::ffi::c_void,
+	init: *const core::ffi::c_void,
+	destroy: *const core::ffi::c_void,
+	access: *const core::ffi::c_void,
+	create: *const core::ffi::c_void,
+	lock: *const core::ffi::c_void,
+	utimens: *const core::ffi::c_void,
+	bmap: *const core::ffi::c_void,
+	ioctl: *const core::ffi::c_void,
+	poll: *const core::ffi::c_void,
+	write_buf: *const core::ffi::c_void,
+	read_buf: *const core::ffi::c_void,
+	flock: *const core::ffi::c_void,
+	fallocate: *const core::ffi::c_void,
+	copy_file_range: *const core::ffi::c_void,
+	lseek: *const core::ffi::c_void,
 }
 
 trait FuseOperations {
@@ -129,7 +157,7 @@ fn main() {
 		listxattr: std::ptr::null(),
 		removexattr: std::ptr::null(),
 		opendir: std::ptr::null(),
-		readdir: std::ptr::null(),
+		readdir: Some(readdir_test_fuse),
 		releasedir: std::ptr::null(),
 		fsyncdir: std::ptr::null(),
 		init: std::ptr::null(),
@@ -166,6 +194,13 @@ pub extern "C" fn read_test_fuse(_path: *const core::ffi::c_char, buf: *mut core
 		}
 		1
 	}
+}
+
+pub extern "C" fn readdir_test_fuse(_path: *const core::ffi::c_char, buf: *mut core::ffi::c_void, filler: FuseFillDir, _offset: libc::off_t, _fi: *mut core::ffi::c_void, _flg: i32) -> core::ffi::c_int {
+	filler(buf, [b'.' as core::ffi::c_char,b'\0' as core::ffi::c_char].as_ptr(), std::ptr::null(), 0, 0);
+	filler(buf, [b'.' as core::ffi::c_char,b'.' as core::ffi::c_char,b'\0' as core::ffi::c_char].as_ptr(), std::ptr::null(), 0, 0);
+	filler(buf, [b't' as core::ffi::c_char,b'e' as core::ffi::c_char,b's' as core::ffi::c_char,b't' as core::ffi::c_char,b'\0' as core::ffi::c_char].as_ptr(), std::ptr::null(), 0, 0);
+	0
 }
 
 pub extern "C" fn getattr_test_fuse(path: *const core::ffi::c_char, stbuf: Option<&mut libc::stat>, _fi: *mut core::ffi::c_void) -> core::ffi::c_int {
