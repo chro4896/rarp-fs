@@ -3,6 +3,8 @@ extern {
 	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
 }
 
+type FuseFillDir = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
+
 #[repr(C)]
 struct fuse_operations {
 	getattr: Option<extern "C" fn(*const core::ffi::c_char, Option<&mut libc::stat>, *mut core::ffi::c_void) -> core::ffi::c_int>,
@@ -30,59 +32,6 @@ struct fuse_operations {
 	removexattr: *const core::ffi::c_void,
 	opendir: *const core::ffi::c_void,
 	readdir: Option<extern "C" fn(*const core::ffi::c_char, *mut core::ffi::c_void, FuseFillDir, libc::off_t, *mut core::ffi::c_void, i32) -> core::ffi::c_int>,
-	releasedir: *const core::ffi::c_void,
-	fsyncdir: *const core::ffi::c_void,
-	init: *const core::ffi::c_void,
-	destroy: *const core::ffi::c_void,
-	access: *const core::ffi::c_void,
-	create: *const core::ffi::c_void,
-	lock: *const core::ffi::c_void,
-	utimens: *const core::ffi::c_void,
-	bmap: *const core::ffi::c_void,
-	ioctl: *const core::ffi::c_void,
-	poll: *const core::ffi::c_void,
-	write_buf: *const core::ffi::c_void,
-	read_buf: *const core::ffi::c_void,
-	flock: *const core::ffi::c_void,
-	fallocate: *const core::ffi::c_void,
-	copy_file_range: *const core::ffi::c_void,
-	lseek: *const core::ffi::c_void,
-}
-
-#[link(name = "fuse3")]
-extern {
-	fn fuse_main_real(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char, op: *const fuse_operations, op_size: usize, private_data: *mut core::ffi::c_void);
-}
-
-type FuseFillDir = extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, *const core::ffi::c_void, libc::off_t, i32) -> core::ffi::c_int;
-
-#[repr(C)]
-struct fuse_operations {
-	getattr: *const core::ffi::c_void,
-	readlink: *const core::ffi::c_void,
-	mknod: *const core::ffi::c_void,
-	mkdir: *const core::ffi::c_void,
-	unlink: *const core::ffi::c_void,
-	rmdir: *const core::ffi::c_void,
-	symlink: *const core::ffi::c_void,
-	rename: *const core::ffi::c_void,
-	link: *const core::ffi::c_void,
-	chmod: *const core::ffi::c_void,
-	chown: *const core::ffi::c_void,
-	truncate: *const core::ffi::c_void,
-	open: *const core::ffi::c_void,
-	read: *const core::ffi::c_void,
-	write: *const core::ffi::c_void,
-	statfs: *const core::ffi::c_void,
-	flush: *const core::ffi::c_void,
-	release: *const core::ffi::c_void,
-	fsync: *const core::ffi::c_void,
-	setxattr: *const core::ffi::c_void,
-	getxattr: *const core::ffi::c_void,
-	listxattr: *const core::ffi::c_void,
-	removexattr: *const core::ffi::c_void,
-	opendir: *const core::ffi::c_void,
-	readdir: *const core::ffi::c_void,
 	releasedir: *const core::ffi::c_void,
 	fsyncdir: *const core::ffi::c_void,
 	init: *const core::ffi::c_void,
